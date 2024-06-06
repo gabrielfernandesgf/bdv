@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Mesas - BDV Control</title>
+</h:head>
+<h:body>
+    <h:form>
+        <p:growl id="growl" showDetail="true" />
+
+        <p:panel header="Lista de Mesas">
+            <p:dataTable var="mesa" value="#{mesaController.mesas}">
+                <p:column headerText="Número">
+                    <h:outputText value="#{mesa.numero}" />
+                </p:column>
+                <p:column headerText="Status">
+                    <h:outputText value="#{mesa.status}" />
+                </p:column>
+                <p:column headerText="Ocupantes">
+                    <h:outputText value="#{mesa.ocupantes}" />
+                </p:column>
+                <p:column headerText="Ações">
+                    <p:commandButton value="Deletar" action="#{mesaController.deletar(mesa.id)}" update=":form:mesasTable" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <p:panel header="Adicionar Nova Mesa">
+            <p:inputText value="#{mesaController.mesa.numero}" placeholder="Número" />
+            <p:inputText value="#{mesaController.mesa.status}" placeholder="Status" />
+            <p:inputText value="#{mesaController.mesa.ocupantes}" placeholder="Ocupantes" />
+            <p:commandButton value="Salvar" action="#{mesaController.salvar}" update=":form:mesasTable" />
+        </p:panel>
+    </h:form>
+</h:body>
+</html>
