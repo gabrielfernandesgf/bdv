@@ -33,6 +33,8 @@
             <p:inputText value="#{mesaController.mesa.ocupantes}" placeholder="Ocupantes" />
             <p:commandButton value="Salvar" action="#{mesaController.salvar}" update=":form:mesasTable" />
         </p:panel>
+
+        <h:inputHidden name="javax.faces.ViewState" id="javax.faces.ViewState" value="#{facesContext.viewRoot.viewId}"/>
     </h:form>
 </h:body>
 </html>

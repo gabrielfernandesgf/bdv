@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>Mesas - BDV Control</title>
+    <style>
+        .mesa-panel {
+            text-align: center;
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mesa-disponivel {
+            background-color: #04ff0c;
+        }
+
+        .mesa-ocupada {
+            background-color: #ff9102;
+        }
+
+        .mesa-aguardando-pagamento {
+            background-color: #000000;
+        }
+
+        .mesa-label {
+            font-weight: bold;
+        }
+
+        .mesas-container {
+            display: grid;
+            grid-template-columns: repeat(5, 2fr);
+        }
+    </style>
+</h:head>
+<h:body>
+    <h:form id="form1">
+        <p:growl id="growl" showDetail="true" />
+
+        <h:panelGroup id="mesasGrid" class="mesas-container">
+            <ui:repeat var="mesa" value="#{mesaController.mesas}">
+                <h:panelGroup styleClass="mesa-panel #{mesaController.getMesaStatusClass(mesa)}">
+                    <h:outputText value="Mesa #{mesa.numero}" styleClass="mesa-label" />
+                    <h:outputText value="Capacidade: #{mesa.ocupantes}" />
+                    <p:commandButton value="Abrir Comanda" action="#{mesaController.abrirComanda(mesa)}" update=":form1" />
+                </h:panelGroup>
+            </ui:repeat>
+        </h:panelGroup>
+    </h:form>
+</h:body>
+</html>

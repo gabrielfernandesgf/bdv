@@ -1,4 +1,4 @@
-package com.gabrielfernandes.bdv.model;
+package br.com.gabrielfernandes.bdv.model;
 
 import java.util.List;
 
@@ -25,8 +25,19 @@ public class Pedido {
     private List<Produto> produtos;
 
     private double total;
-    
+
     private String status;
+
+    public Pedido() {}
+
+    public Pedido(Mesa mesa, List<Produto> produtos) {
+        this.mesa = mesa;
+        this.produtos = produtos;
+        this.total = produtos.stream().mapToDouble(Produto::getPreco).sum();
+        this.status = "Pendente";
+    }
+
+    // Getters e Setters
 
     public Long getId() {
         return id;
@@ -68,4 +79,7 @@ public class Pedido {
         this.status = status;
     }
 
+    public void calcularTotal() {
+        this.total = produtos.stream().mapToDouble(Produto::getPreco).sum();
+    }
 }
