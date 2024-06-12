@@ -1,5 +1,6 @@
 package br.com.gabrielfernandes.bdv.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -24,16 +25,20 @@ public class Pedido {
     @JoinColumn(name="pedido_id")
     private List<Produto> produtos;
 
-    private double total;
+    private BigDecimal total;
 
     private String status;
 
-    public Pedido() {}
+    public Pedido() {
+        this.total = BigDecimal.ZERO;
+    }
 
     public Pedido(Mesa mesa, List<Produto> produtos) {
         this.mesa = mesa;
         this.produtos = produtos;
-        this.total = produtos.stream().mapToDouble(Produto::getPreco).sum();
+        this.total = produtos.stream()
+                             .map(Produto::getPreco)
+                             .reduce(BigDecimal.ZERO, BigDecimal::add);
         this.status = "Pendente";
     }
 
@@ -61,13 +66,14 @@ public class Pedido {
 
     public void setProdutos(List<Produto> produtos) {
         this.produtos = produtos;
+        calcularTotal();
     }
 
-    public double getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
 
-    public void setTotal(double total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 
@@ -80,6 +86,8 @@ public class Pedido {
     }
 
     public void calcularTotal() {
-        this.total = produtos.stream().mapToDouble(Produto::getPreco).sum();
+        this.total = produtos.stream()
+                             .map(Produto::getPreco)
+                             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

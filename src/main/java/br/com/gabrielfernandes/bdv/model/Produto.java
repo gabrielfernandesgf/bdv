@@ -19,6 +19,7 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String codigo;
     private String nome;
     private BigDecimal preco;
     private String descricao;
@@ -32,60 +33,87 @@ public class Produto {
 
     @Transient
     private int quantidade;
+
     @Transient
-    private double subtotal;
+    private BigDecimal subtotal;
+
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
     public String getNome() {
         return nome;
     }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
+
     public BigDecimal getPreco() {
         return preco;
     }
+
     public void setPreco(BigDecimal preco) {
         this.preco = preco;
     }
+
     public String getDescricao() {
         return descricao;
     }
+
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
     public String getImagem() {
         return imagem;
     }
+
     public void setImagem(String imagem) {
         this.imagem = imagem;
     }
+
     public Categoria getCategoria() {
         return categoria;
     }
+
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
+
     public Subcategoria getSubcategoria() {
         return subcategoria;
     }
+
     public void setSubcategoria(Subcategoria subcategoria) {
         this.subcategoria = subcategoria;
     }
+
     public int getQuantidade() {
         return quantidade;
     }
+
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
     }
-    public double getSubtotal() {
+
+    public BigDecimal getSubtotal() {
         return subtotal;
     }
-    public void setSubtotal(double subtotal) {
+
+    public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
 
@@ -118,10 +146,5 @@ public class Produto {
         DISCO_DE_CARNE,
         CARNE_E_CASTANHA500G_ASSADA, CARNE_E_CASTANHA1KG, MUCARELA500G_ASSADA, MUCARELA1KG_ASSADA,
         SHAWARMA_CARNE, SHAWARMA_FRANGO, SHAWARMA_FALAFEL
-
     }
-
-    
-
-    
 }

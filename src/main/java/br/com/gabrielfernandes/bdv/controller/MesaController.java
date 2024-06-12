@@ -18,6 +18,7 @@ import br.com.gabrielfernandes.bdv.model.Produto;
 import br.com.gabrielfernandes.bdv.service.MesaService;
 import br.com.gabrielfernandes.bdv.service.PedidoService;
 import br.com.gabrielfernandes.bdv.service.ProdutoService;
+import java.math.BigDecimal;
 
 @Named
 @ViewScoped
@@ -65,7 +66,8 @@ public class MesaController implements Serializable {
         produto = produtoService.findById(produto.getId());
         if (produto != null) {
             produto.setQuantidade(quantidade);
-            produto.setSubtotal(produto.getPreco() * quantidade);
+            BigDecimal subtotal = produto.getPreco().multiply(BigDecimal.valueOf(quantidade));
+            produto.setSubtotal(subtotal);
             pedido.getProdutos().add(produto);
             pedido.calcularTotal();
             pedidoService.save(pedido);
@@ -142,7 +144,6 @@ public class MesaController implements Serializable {
         }
     }
 
-    
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
@@ -215,4 +216,3 @@ public class MesaController implements Serializable {
         return mesa.getStatus().getCor();
     }
 }
-

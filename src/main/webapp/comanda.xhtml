@@ -64,7 +64,7 @@
             </ui:repeat>
         </h:panelGrid>
 
-        <p:panelGrid id="pedidoGrid" columns="4" style="width:100%;" layout="grid">
+        <h:panelGrid id="pedidoGrid" columns="4" style="width:100%;" layout="grid">
             <f:facet name="header">
                 <p:outputLabel value="Itens do Pedido" />
             </f:facet>
@@ -78,13 +78,13 @@
             </h:column>
             <h:column>
                 <f:facet name="header">Preço Unitário</f:facet>
-                <h:outputText value="#{item.precoUnitario}" />
+                <h:outputText value="#{item.preco}" />
             </h:column>
             <h:column>
                 <f:facet name="header">Subtotal</f:facet>
                 <h:outputText value="#{item.subtotal}" />
             </h:column>
-        </p:panelGrid>
+        </h:panelGrid>
 
         <h:panelGroup layout="block" style="text-align:right;" id="total">
             <h:outputText value="Total: " styleClass="total" />

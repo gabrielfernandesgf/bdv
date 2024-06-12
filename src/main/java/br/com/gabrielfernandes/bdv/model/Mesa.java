@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
 
 @Entity
 @Table(name = "mesa")
@@ -24,7 +23,6 @@ public class Mesa implements Serializable {
     private Integer id;
 
     @Column(name = "data_hora_abertura", columnDefinition = "TIMESTAMP")
-    @Temporal
     private LocalDateTime dataHoraAbertura;
 
     private Integer numero;
