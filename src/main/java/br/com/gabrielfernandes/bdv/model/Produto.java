@@ -3,8 +3,6 @@ package br.com.gabrielfernandes.bdv.model;
 import java.math.BigDecimal;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,13 +21,10 @@ public class Produto {
     private String nome;
     private BigDecimal preco;
     private String descricao;
-    private String imagem;
+    private String imagem; // URL da imagem
 
-    @Enumerated(EnumType.STRING)
-    private Categoria categoria;
-
-    @Enumerated(EnumType.STRING)
-    private Subcategoria subcategoria;
+    private String categoria; // Usando String para categoria
+    private String subcategoria; // Usando String para subcategoria
 
     @Transient
     private int quantidade;
@@ -85,19 +80,19 @@ public class Produto {
         this.imagem = imagem;
     }
 
-    public Categoria getCategoria() {
+    public String getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(Categoria categoria) {
+    public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
 
-    public Subcategoria getSubcategoria() {
+    public String getSubcategoria() {
         return subcategoria;
     }
 
-    public void setSubcategoria(Subcategoria subcategoria) {
+    public void setSubcategoria(String subcategoria) {
         this.subcategoria = subcategoria;
     }
 
@@ -117,34 +112,5 @@ public class Produto {
         this.subtotal = subtotal;
     }
 
-    public enum Categoria {
-        ESFIHAS,
-        QUIBE_FRITO,
-        QUIBE_ASSADO,
-        DISCO,
-        SHAWARMA,
-        COMBO_INDIVIDUAL,
-        COMBO_FRIOS,
-        PRATOS_FRIOS,
-        PORCOES,
-        BEBIDAS_DESTILADAS,
-        WHISKY,
-        DRINKS,
-        CERVEJAS_600ML,
-        CERVEJAS_LONG_NECK,
-        REFRIGERANTES,
-        AGUA,
-        SUCOS,
-        DIVERSOS,
-    }
-
-    public enum Subcategoria {
-        SALGADAS, CALABRESA, CARNE, CARNE_COM_QUEIJO, ESCAROLA, FRANGO, FRANGO_COM_CATUPIRY, QUEIJO, SARDINHA, ZAATAR,
-        DOCES, CHOCOLATE, CHOCOLATE_COM_MORANGO, CHOCOLATE_COM_QUEIJO, DOCE_DE_LEITE, NUTELLA, ROMEU_E_JULIETA,
-        ADICIONAL_PARA_ESFIHAS, AZEITONA, CATUPIRY, CEBOLA, CREAM_CHEESE, ERVILHA, MILHO, MUCARELA, PALMITO, TOMATE,
-        CARNE_E_CASTANHA, MUCARELA_COM_CREME_CHEESE, MUCARELA_CATUPIRY_TOMATE_E_OREGANO,
-        DISCO_DE_CARNE,
-        CARNE_E_CASTANHA500G_ASSADA, CARNE_E_CASTANHA1KG, MUCARELA500G_ASSADA, MUCARELA1KG_ASSADA,
-        SHAWARMA_CARNE, SHAWARMA_FRANGO, SHAWARMA_FALAFEL
-    }
+    
 }

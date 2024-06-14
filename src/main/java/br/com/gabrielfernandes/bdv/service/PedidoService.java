@@ -1,18 +1,20 @@
 package br.com.gabrielfernandes.bdv.service;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.inject.Inject;
+
 import org.springframework.stereotype.Service;
 
 import br.com.gabrielfernandes.bdv.model.Pedido;
-import br.com.gabrielfernandes.bdv.model.Produto;
+import br.com.gabrielfernandes.bdv.model.ProdutoPedido;
 import br.com.gabrielfernandes.bdv.repository.PedidoRepository;
 
 @Service
 public class PedidoService {
 
-    @Autowired
+    @Inject
     private PedidoRepository pedidoRepository;
 
     public void save(Pedido pedido) {
@@ -28,10 +30,10 @@ public class PedidoService {
         return pedidoRepository.findById(id).orElse(null);
     }
 
-    public void addProduto(Long pedidoId, Produto produto) {
+    public void addProduto(Long pedidoId, ProdutoPedido produtoPedido) {
         Pedido pedido = findById(pedidoId);
         if (pedido != null) {
-            pedido.getProdutos().add(produto);
+            pedido.getProdutos().add(produtoPedido);
             save(pedido);
         }
     }
@@ -39,7 +41,7 @@ public class PedidoService {
     public void fecharPedido(Long pedidoId) {
         Pedido pedido = findById(pedidoId);
         if (pedido != null) {
-            pedido.setStatus("Fechado");
+            pedido.setStatus(Pedido.Status.FINALIZADA);
             save(pedido);
         }
     }
@@ -47,8 +49,12 @@ public class PedidoService {
     public void cancelarPedido(Long pedidoId) {
         Pedido pedido = findById(pedidoId);
         if (pedido != null) {
-            pedido.setStatus("Cancelado");
+            pedido.setStatus(Pedido.Status.CANCELADO);
             save(pedido);
         }
+    }
+
+    public Optional<Pedido> findByMesaId(Long mesaId) {
+        return pedidoRepository.findById(mesaId);
     }
 }

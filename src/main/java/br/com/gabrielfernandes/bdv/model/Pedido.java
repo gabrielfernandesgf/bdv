@@ -1,17 +1,23 @@
 package br.com.gabrielfernandes.bdv.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "pedido")
 public class Pedido {
 
     @Id
@@ -19,30 +25,44 @@ public class Pedido {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "mesa_id")
     private Mesa mesa;
 
-    @OneToMany
-    @JoinColumn(name="pedido_id")
-    private List<Produto> produtos;
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    private List<ProdutoPedido> produtos;
 
     private BigDecimal total;
 
-    private String status;
+    private LocalDateTime dataHora;
 
-    public Pedido() {
-        this.total = BigDecimal.ZERO;
+    public enum Status {
+        ABERTO,
+        FINALIZADA,
+        PAGO,
+        CANCELADO
     }
 
-    public Pedido(Mesa mesa, List<Produto> produtos) {
+    public enum FormaPagamento {
+        DINHEIRO,
+        CARTAO,
+        PIX
+    }
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private FormaPagamento formaPagamento;
+
+    // Construtores, Getters e Setters
+
+    public Pedido() {}
+
+    public Pedido(Mesa mesa, List<ProdutoPedido> produtos) {
         this.mesa = mesa;
         this.produtos = produtos;
-        this.total = produtos.stream()
-                             .map(Produto::getPreco)
-                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-        this.status = "Pendente";
+        this.status = Status.ABERTO;
     }
-
-    // Getters e Setters
 
     public Long getId() {
         return id;
@@ -60,13 +80,12 @@ public class Pedido {
         this.mesa = mesa;
     }
 
-    public List<Produto> getProdutos() {
+    public List<ProdutoPedido> getProdutos() {
         return produtos;
     }
 
-    public void setProdutos(List<Produto> produtos) {
+    public void setProdutos(List<ProdutoPedido> produtos) {
         this.produtos = produtos;
-        calcularTotal();
     }
 
     public BigDecimal getTotal() {
@@ -77,17 +96,33 @@ public class Pedido {
         this.total = total;
     }
 
-    public String getStatus() {
+    public LocalDateTime getDataHora() {
+        return dataHora;
+    }
+
+    public void setDataHora(LocalDateTime dataHora) {
+        this.dataHora = dataHora;
+    }
+
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
+    public FormaPagamento getFormaPagamento() {
+        return formaPagamento;
+    }
+
+    public void setFormaPagamento(FormaPagamento formaPagamento) {
+        this.formaPagamento = formaPagamento;
+    }
+
     public void calcularTotal() {
-        this.total = produtos.stream()
-                             .map(Produto::getPreco)
-                             .reduce(BigDecimal.ZERO, BigDecimal::add);
+        total = produtos.stream()
+            .map(ProdutoPedido::getSubtotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

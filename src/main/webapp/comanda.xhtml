@@ -11,92 +11,43 @@
             text-align: center;
             margin: 10px;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .cardapio-rapido {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .cardapio-item {
-            width: 120px;
-            margin: 5px;
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .total {
-            font-size: 24px;
-            font-weight: bold;
         }
     </style>
 </h:head>
 <h:body>
     <h:form id="comandaForm">
-        <h:panelGrid columns="2" styleClass="comanda-panel">
-            <h:outputLabel value="Cliente (Mesa): " />
-            <h:inputText value="#{mesaController.mesa.numero}" readonly="true" />
+        <p:panelGrid columns="2" styleClass="comanda-panel">
+            <p:outputLabel value="Produto:" for="produto"/>
+            <p:selectOneMenu id="produto" value="#{mesaController.produtoSelecionadoId}">
+                <f:selectItem itemLabel="Selecione um Produto" itemValue=""/>
+                <f:selectItems value="#{mesaController.produtos}" var="produto" itemLabel="#{produto.nome}" itemValue="#{produto.id}"/>
+            </p:selectOneMenu>
 
-            <h:outputLabel value="Código do Produto: " />
-            <h:inputText value="#{mesaController.produto.codigo}" />
+            <p:outputLabel value="Quantidade:" for="quantidade"/>
+            <p:inputText id="quantidade" value="#{mesaController.quantidade}" type="number"/>
 
-            <h:outputLabel value="Descrição do Item: " />
-            <h:selectOneMenu value="#{mesaController.produto.id}">
-                <f:selectItems value="#{mesaController.produtos}" var="produto" itemValue="#{produto.id}" itemLabel="#{produto.nome}" />
-            </h:selectOneMenu>
+            <p:commandButton value="Adicionar Item" action="#{mesaController.addProdutoToPedido}" update=":comandaForm:produtos, :comandaForm:total"/>
+        </p:panelGrid>
 
-            <h:outputLabel value="Quantidade: " />
-            <h:inputText value="#{mesaController.quantidade}" />
+        <p:dataTable value="#{mesaController.pedido.produtos}" var="item" id="produtos">
+            <p:column headerText="Produto">
+                <h:outputText value="#{item.nome}"/>
+            </p:column>
+            <p:column headerText="Quantidade">
+                <h:outputText value="#{item.quantidade}"/>
+            </p:column>
+            <p:column headerText="Subtotal">
+                <h:outputText value="#{item.subtotal}"/>
+            </p:column>
+        </p:dataTable>
 
-            <h:outputLabel value="Preço Unitário: " />
-            <h:inputText value="#{mesaController.produto.preco}" readonly="true" />
+        <p:panelGrid columns="2">
+            <p:outputLabel value="Total:"/>
+            <h:outputText id="total" value="#{mesaController.pedido.total}"/>
+        </p:panelGrid>
 
-            <p:commandButton value="Adicionar Item" action="#{mesaController.addProdutoToPedido}" update=":comandaForm:pedidoGrid :comandaForm:total" />
-        </h:panelGrid>
-
-        <h:panelGrid columns="1" styleClass="cardapio-rapido">
-            <ui:repeat var="produto" value="#{mesaController.produtos}">
-                <h:panelGroup layout="block" styleClass="cardapio-item">
-                    <h:commandLink action="#{mesaController.selecionarProduto(produto)}" value="#{produto.nome}" />
-                </h:panelGroup>
-            </ui:repeat>
-        </h:panelGrid>
-
-        <h:panelGrid id="pedidoGrid" columns="4" style="width:100%;" layout="grid">
-            <f:facet name="header">
-                <p:outputLabel value="Itens do Pedido" />
-            </f:facet>
-            <h:column>
-                <f:facet name="header">Item</f:facet>
-                <h:outputText value="#{item.descricao}" />
-            </h:column>
-            <h:column>
-                <f:facet name="header">Quantidade</f:facet>
-                <h:outputText value="#{item.quantidade}" />
-            </h:column>
-            <h:column>
-                <f:facet name="header">Preço Unitário</f:facet>
-                <h:outputText value="#{item.preco}" />
-            </h:column>
-            <h:column>
-                <f:facet name="header">Subtotal</f:facet>
-                <h:outputText value="#{item.subtotal}" />
-            </h:column>
-        </h:panelGrid>
-
-        <h:panelGroup layout="block" style="text-align:right;" id="total">
-            <h:outputText value="Total: " styleClass="total" />
-            <h:outputText value="#{mesaController.pedido.total}" styleClass="total" />
-        </h:panelGroup>
-
-        <h:panelGroup layout="block" style="text-align:center;">
-            <p:commandButton value="Sair da Comanda" action="#{mesaController.sairDaComanda}" />
-            <p:commandButton value="Imprimir Preparo" action="#{mesaController.imprimirPreparo}" />
-            <p:commandButton value="Finalizar Venda" action="#{mesaController.finalizarVenda}" />
-            <p:commandButton value="Cancelar Mesa" action="#{mesaController.cancelarMesa}" />
-        </h:panelGroup>
+        <p:commandButton value="Finalizar Venda" action="#{mesaController.finalizarVenda}" update=":comandaForm"/>
+        <p:commandButton value="Sair da Comanda" action="#{mesaController.sairDaComanda}"/>
     </h:form>
 </h:body>
 </html>

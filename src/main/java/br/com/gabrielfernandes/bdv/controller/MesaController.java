@@ -1,7 +1,9 @@
 package br.com.gabrielfernandes.bdv.controller;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,13 +14,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import br.com.gabrielfernandes.bdv.model.Mesa;
-import br.com.gabrielfernandes.bdv.model.Mesa.Status;
 import br.com.gabrielfernandes.bdv.model.Pedido;
 import br.com.gabrielfernandes.bdv.model.Produto;
+import br.com.gabrielfernandes.bdv.model.ProdutoPedido;
 import br.com.gabrielfernandes.bdv.service.MesaService;
 import br.com.gabrielfernandes.bdv.service.PedidoService;
 import br.com.gabrielfernandes.bdv.service.ProdutoService;
-import java.math.BigDecimal;
 
 @Named
 @ViewScoped
@@ -28,7 +29,7 @@ public class MesaController implements Serializable {
 
     private Mesa mesa = new Mesa();
     private Pedido pedido = new Pedido();
-    private Produto produto = new Produto();
+    private Long produtoSelecionadoId;
     private int quantidade = 1;
 
     @Inject
@@ -40,78 +41,61 @@ public class MesaController implements Serializable {
     @Inject
     private ProdutoService produtoService;
 
-    public String abrirMesa() {
-        mesa.setDataHoraAbertura(LocalDateTime.now());
-        mesa.setStatus(Status.OCUPADO);
-        mesaService.save(mesa);
-        pedido = new Pedido(mesa, Arrays.asList()); // Inicializa o pedido para a mesa
-        pedidoService.save(pedido);
-        return "mesaAberta";
-    }
-
-    public String fecharMesa() {
-        mesa.setStatus(Status.AGUARDANDO_PAGAMENTO);
-        mesaService.save(mesa);
-        pedidoService.fecharPedido(pedido.getId());
-        return "mesaFechada";
-    }
-
-    public String liberarMesa() {
-        mesa.setStatus(Status.LIVRE);
-        mesaService.save(mesa);
-        return "mesaLiberada";
-    }
-
-    public void addProdutoToPedido() {
-        produto = produtoService.findById(produto.getId());
-        if (produto != null) {
-            produto.setQuantidade(quantidade);
-            BigDecimal subtotal = produto.getPreco().multiply(BigDecimal.valueOf(quantidade));
-            produto.setSubtotal(subtotal);
-            pedido.getProdutos().add(produto);
-            pedido.calcularTotal();
-            pedidoService.save(pedido);
-        }
-    }
-
-    public void selecionarProduto(Produto produto) {
-        this.produto = produto;
-        this.quantidade = 1;
-    }
-
-    public void sairDaComanda() {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Saindo da comanda..."));
-        // Lógica adicional para sair da comanda se necessário
+    public String sairDaComanda() {
+        return "mesa.xhtml?faces-redirect=true";
     }
 
     public void imprimirPreparo() {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Imprimindo preparo..."));
-        // Lógica para imprimir preparo - depende da integração com uma impressora ou geração de PDF
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Relatório enviado para a cozinha."));
     }
 
-    public void finalizarVenda() {
-        pedido.setStatus("Finalizada");
+    public String finalizarVenda() {
+        pedido.setStatus(Pedido.Status.FINALIZADA);
         pedidoService.save(pedido);
-        mesa.setStatus(Status.LIVRE);
-        mesaService.save(mesa);
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Venda finalizada com sucesso!"));
+        return "pagamento.xhtml?faces-redirect=true";
     }
 
-    public void cancelarMesa() {
-        pedidoService.cancelarPedido(pedido.getId());
-        mesa.setStatus(Status.LIVRE);
+    public String finalizarPagamento() {
+        pedido.setStatus(Pedido.Status.PAGO);
+        pedidoService.save(pedido);
+        mesa.setStatus(Mesa.Status.LIVRE);
         mesaService.save(mesa);
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Mesa cancelada com sucesso!"));
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Pagamento finalizado com sucesso!"));
+        return "mesa.xhtml?faces-redirect=true";
+    }
+
+    public void addProdutoToPedido() {
+        Produto produtoSelecionado = produtoService.findById(produtoSelecionadoId);
+        if (produtoSelecionado != null) {
+            ProdutoPedido produtoPedido = new ProdutoPedido();
+            produtoPedido.setProduto(produtoSelecionado);
+            produtoPedido.setQuantidade(quantidade);
+            BigDecimal subtotal = produtoSelecionado.getPreco().multiply(BigDecimal.valueOf(quantidade));
+            produtoPedido.setSubtotal(subtotal);
+            pedido.getProdutos().add(produtoPedido);  // Adiciona à lista de produtos
+            pedido.calcularTotal();
+            pedidoService.save(pedido);
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Produto adicionado ao pedido."));
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Produto não encontrado."));
+        }
+    }
+
+    public void selecionarProduto(Long produtoId) {
+        this.produtoSelecionadoId = produtoId;
+        this.quantidade = 1;
     }
 
     public String abrirComanda(Mesa mesa) {
         this.mesa = mesa;
-        mesa.setStatus(Status.OCUPADO);
+        mesa.setStatus(Mesa.Status.OCUPADO);
         mesa.setDataHoraAbertura(LocalDateTime.now());
         save();
-        pedido = new Pedido(mesa, Arrays.asList()); // Inicializa o pedido para a mesa
+        pedido = new Pedido();
+        pedido.setMesa(mesa);
+        pedido.setProdutos(new ArrayList<>());
         pedidoService.save(pedido);
-        return "comanda.xhtml?faces-redirect=true"; // Redireciona para a página de comanda
+        return "comanda.xhtml?faces-redirect=true";
     }
 
     public void save() {
@@ -123,12 +107,32 @@ public class MesaController implements Serializable {
         }
     }
 
+    public List<String> getFormasPagamento() {
+        return Arrays.asList("DINHEIRO", "CARTAO", "PIX");
+    }
+
+    public ProdutoService getProdutoService() {
+        return produtoService;
+    }
+
+    public void setProdutoService(ProdutoService produtoService) {
+        this.produtoService = produtoService;
+    }
+
     public List<Mesa> getMesas() {
         return mesaService.findAll();
     }
 
-    public List<Status> getStatuses() {
-        return Arrays.asList(Status.values());
+    public List<Mesa.Status> getStatuses() {
+        return Arrays.asList(Mesa.Status.values());
+    }
+
+    public List<String> getCategorias() {
+        return Arrays.asList("Esfihas", "Quibe", "Discos", "Shawarma", "Combo", "PratosFrios", "Porções", "Bebidas");
+    }
+
+    public List<String> getSubcategorias() {
+        return Arrays.asList("Salgadas", "Doces", "Adicional para Esfihas", "Frito", "Assado", "Adicional", "Destiladas", "Whiskys", "Drinks", "Cervejas 600ml", "Cervejas LongNeck", "Refrigerantes", "Agua", "Sucos");
     }
 
     public String getMesaStatusClass(Mesa mesa) {
@@ -144,33 +148,7 @@ public class MesaController implements Serializable {
         }
     }
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
-    public MesaService getMesaService() {
-        return mesaService;
-    }
-
-    public void setMesaService(MesaService mesaService) {
-        this.mesaService = mesaService;
-    }
-
-    public PedidoService getPedidoService() {
-        return pedidoService;
-    }
-
-    public void setPedidoService(PedidoService pedidoService) {
-        this.pedidoService = pedidoService;
-    }
-
-    public ProdutoService getProdutoService() {
-        return produtoService;
-    }
-
-    public void setProdutoService(ProdutoService produtoService) {
-        this.produtoService = produtoService;
-    }
+    
 
     public Mesa getMesa() {
         return mesa;
@@ -188,12 +166,12 @@ public class MesaController implements Serializable {
         this.pedido = pedido;
     }
 
-    public Produto getProduto() {
-        return produto;
+    public Long getProdutoSelecionadoId() {
+        return produtoSelecionadoId;
     }
 
-    public void setProduto(Produto produto) {
-        this.produto = produto;
+    public void setProdutoSelecionadoId(Long produtoSelecionadoId) {
+        this.produtoSelecionadoId = produtoSelecionadoId;
     }
 
     public int getQuantidade() {
