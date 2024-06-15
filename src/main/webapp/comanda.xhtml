@@ -4,50 +4,30 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-<h:head>
+
+<head>
     <title>Comanda</title>
-    <style>
-        .comanda-panel {
-            text-align: center;
-            margin: 10px;
-            padding: 10px;
-        }
-    </style>
-</h:head>
-<h:body>
-    <h:form id="comandaForm">
-        <p:panelGrid columns="2" styleClass="comanda-panel">
-            <p:outputLabel value="Produto:" for="produto"/>
-            <p:selectOneMenu id="produto" value="#{mesaController.produtoSelecionadoId}">
-                <f:selectItem itemLabel="Selecione um Produto" itemValue=""/>
-                <f:selectItems value="#{mesaController.produtos}" var="produto" itemLabel="#{produto.nome}" itemValue="#{produto.id}"/>
-            </p:selectOneMenu>
+</head>
+<body>
+    <h:form>
+        <h:panelGroup>
+            <h:outputText value="Mesa: #{mesaController.mesaSelecionada.numero}" />
 
-            <p:outputLabel value="Quantidade:" for="quantidade"/>
-            <p:inputText id="quantidade" value="#{mesaController.quantidade}" type="number"/>
+            <h:panelGroup>
+                <ui:repeat value="#{categoriaController.categorias}" var="categoria">
+                    <h:panelGroup>
+                        <h:outputText value="#{categoria.nome}" />
+                        <ui:repeat value="#{categoria.produtos}" var="produto">
+                            <h:commandButton value="#{produto.nome}" action="#{categoriaController.adicionarProduto(produto)}" />
+                        </ui:repeat>
+                    </h:panelGroup>
+                </ui:repeat>
+            </h:panelGroup>
+        </h:panelGroup>
 
-            <p:commandButton value="Adicionar Item" action="#{mesaController.addProdutoToPedido}" update=":comandaForm:produtos, :comandaForm:total"/>
-        </p:panelGrid>
-
-        <p:dataTable value="#{mesaController.pedido.produtos}" var="item" id="produtos">
-            <p:column headerText="Produto">
-                <h:outputText value="#{item.nome}"/>
-            </p:column>
-            <p:column headerText="Quantidade">
-                <h:outputText value="#{item.quantidade}"/>
-            </p:column>
-            <p:column headerText="Subtotal">
-                <h:outputText value="#{item.subtotal}"/>
-            </p:column>
-        </p:dataTable>
-
-        <p:panelGrid columns="2">
-            <p:outputLabel value="Total:"/>
-            <h:outputText id="total" value="#{mesaController.pedido.total}"/>
-        </p:panelGrid>
-
-        <p:commandButton value="Finalizar Venda" action="#{mesaController.finalizarVenda}" update=":comandaForm"/>
-        <p:commandButton value="Sair da Comanda" action="#{mesaController.sairDaComanda}"/>
+        <!-- Botões para finalizar venda e voltar às mesas -->
+        <h:commandButton value="Finalizar Venda" action="#{mesaController.finalizarVenda}" />
+        <h:commandButton value="Voltar às Mesas" action="#{mesaController.voltarMesas}" />
     </h:form>
-</h:body>
+</body>
 </html>

@@ -14,11 +14,14 @@ public class MesaService {
     @Autowired
     private MesaRepository mesaRepository;
 
-    public void save(Mesa mesa) {
-        mesaRepository.save(mesa);
+    public Mesa save(Mesa mesa) {
+        System.out.println("Persistindo mesa no banco de dados: " + mesa);
+        return mesaRepository.save(mesa);
     }
 
     public List<Mesa> findAll() {
         return mesaRepository.findAll();
     }
+
+    
 }

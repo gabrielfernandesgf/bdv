@@ -6,22 +6,29 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "produto_pedido")
-public class ProdutoPedido {
+@Table(name = "item_pedido")
+public class ItemPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "pedido_id")
     private Pedido pedido;
 
     @ManyToOne
+    @JoinColumn(name = "produto_id")
     private Produto produto;
+
+    @ManyToOne
+    @JoinColumn(name = "comanda_id")
+    private Comanda comanda;
 
     private int quantidade;
     private BigDecimal subtotal;
@@ -51,6 +58,14 @@ public class ProdutoPedido {
         this.produto = produto;
     }
 
+    public Comanda getComanda() {
+        return comanda;
+    }
+
+    public void setComanda(Comanda comanda) {
+        this.comanda = comanda;
+    }
+
     public int getQuantidade() {
         return quantidade;
     }
@@ -67,6 +82,7 @@ public class ProdutoPedido {
         this.subtotal = subtotal;
     }
 
+    // Método para acessar o nome do produto
     public String getNome() {
         return produto != null ? produto.getNome() : "";
     }

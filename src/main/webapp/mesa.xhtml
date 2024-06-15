@@ -44,18 +44,32 @@
     </style>
 </h:head>
 <h:body>
-    <h:form id="form1">
+    <h:form id="form">
         <p:growl id="growl" showDetail="true" />
 
         <h:panelGroup id="mesasGrid" class="mesas-container">
             <ui:repeat var="mesa" value="#{mesaController.mesas}">
                 <h:panelGroup styleClass="mesa-panel #{mesaController.getMesaStatusClass(mesa)}">
                     <h:outputText value="Mesa #{mesa.numero}" styleClass="mesa-label" />
-                    <h:outputText value="Capacidade: #{mesa.ocupantes}" />
-                    <p:commandButton value="Abrir Comanda" action="#{mesaController.abrirComanda(mesa)}" update=":form1" />
+                    <h:outputText value="Capacidade: #{mesa.numeroOcupantes}" />
+                    <p:commandButton value="Abrir Comanda" action="#{mesaController.abrirComanda(mesa)}" update=":form" process="@this" />
                 </h:panelGroup>
             </ui:repeat>
         </h:panelGroup>
+
+        <p:dialog header="Abrir Comanda" widgetVar="dlgAbrirComanda" modal="true" closable="false" resizable="false">
+            <h:panelGrid columns="2">
+                <h:outputLabel for="ocupantes" value="Ocupantes:" />
+                <p:inputText id="ocupantes" value="#{mesaController.numeroOcupantes}" />
+
+                <h:outputLabel for="dataHora" value="Data e Hora:" />
+                <h:outputText id="dataHora" value="#{mesaController.dataHoraAbertura}" />
+            </h:panelGrid>
+            <f:facet name="footer">
+                <p:commandButton value="Confirmar" action="#{mesaController.confirmarAberturaComanda}" update=":form" oncomplete="PF('dlgAbrirComanda').hide();" />
+                <p:commandButton value="Cancelar" onclick="PF('dlgAbrirComanda').hide();" type="button" />
+            </f:facet>
+        </p:dialog>
     </h:form>
 </h:body>
 </html>

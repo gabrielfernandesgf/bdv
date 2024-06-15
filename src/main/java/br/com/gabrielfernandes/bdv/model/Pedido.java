@@ -2,9 +2,11 @@ package br.com.gabrielfernandes.bdv.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,11 +31,17 @@ public class Pedido {
     private Mesa mesa;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
-    private List<ProdutoPedido> produtos;
+    private List<ItemPedido> itens = new ArrayList<>();
 
-    private BigDecimal total;
+    @Column(nullable = false)
+    private BigDecimal total = BigDecimal.ZERO;
 
+    @Column(nullable = false)
     private LocalDateTime dataHora;
+
+    public Object getProdutos() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
     public enum Status {
         ABERTO,
@@ -56,12 +64,21 @@ public class Pedido {
 
     // Construtores, Getters e Setters
 
-    public Pedido() {}
-
-    public Pedido(Mesa mesa, List<ProdutoPedido> produtos) {
-        this.mesa = mesa;
-        this.produtos = produtos;
+    public Pedido() {
+        this.itens = new ArrayList<>();
         this.status = Status.ABERTO;
+        this.total = BigDecimal.ZERO;
+        this.dataHora = LocalDateTime.now();
+        this.formaPagamento = FormaPagamento.DINHEIRO;
+    }
+
+    public Pedido(Mesa mesa, List<ItemPedido> itens) {
+        this.mesa = mesa;
+        this.itens = itens != null ? itens : new ArrayList<>();
+        this.status = Status.ABERTO;
+        this.total = BigDecimal.ZERO;
+        this.dataHora = LocalDateTime.now();
+        this.formaPagamento = FormaPagamento.DINHEIRO;
     }
 
     public Long getId() {
@@ -80,12 +97,12 @@ public class Pedido {
         this.mesa = mesa;
     }
 
-    public List<ProdutoPedido> getProdutos() {
-        return produtos;
+    public List<ItemPedido> getItens() {
+        return itens;
     }
 
-    public void setProdutos(List<ProdutoPedido> produtos) {
-        this.produtos = produtos;
+    public void setItens(List<ItemPedido> itens) {
+        this.itens = itens;
     }
 
     public BigDecimal getTotal() {
@@ -121,8 +138,8 @@ public class Pedido {
     }
 
     public void calcularTotal() {
-        total = produtos.stream()
-            .map(ProdutoPedido::getSubtotal)
+        total = itens.stream()
+            .map(ItemPedido::getSubtotal)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

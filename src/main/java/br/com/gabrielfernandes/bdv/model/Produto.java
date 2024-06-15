@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -23,7 +25,9 @@ public class Produto {
     private String descricao;
     private String imagem; // URL da imagem
 
-    private String categoria; // Usando String para categoria
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
     private String subcategoria; // Usando String para subcategoria
 
     @Transient
@@ -80,14 +84,6 @@ public class Produto {
         this.imagem = imagem;
     }
 
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
-
     public String getSubcategoria() {
         return subcategoria;
     }
@@ -111,6 +107,16 @@ public class Produto {
     public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+
 
     
 }
