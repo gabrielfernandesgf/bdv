@@ -2,22 +2,23 @@ package br.com.gabrielfernandes.bdv.service;
 
 import java.util.List;
 
-import javax.inject.Named;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import br.com.gabrielfernandes.bdv.model.Mesa;
 import br.com.gabrielfernandes.bdv.model.Pedido;
 import br.com.gabrielfernandes.bdv.repository.PedidoRepository;
 
-@Named
+@Service
 public class PedidoService {
 
     @Autowired
     private PedidoRepository pedidoRepository;
 
-    public Pedido save(Pedido pedido) {
-        System.out.println("Persistindo pedido no banco de dados: " + pedido);
-        return pedidoRepository.save(pedido);
+    @Transactional
+    public void save(Pedido pedido) {
+        pedidoRepository.save(pedido);
     }
 
     public List<Pedido> findAll() {
@@ -28,8 +29,7 @@ public class PedidoService {
         return pedidoRepository.findById(id).orElse(null);
     }
 
-    
-    public void deleteById(Long id) {
-        pedidoRepository.deleteById(id);
+    public List<Pedido> findByMesaAndStatus(Mesa mesa, Pedido.Status status) {
+        return pedidoRepository.findByMesaAndStatus(mesa, status);
     }
 }

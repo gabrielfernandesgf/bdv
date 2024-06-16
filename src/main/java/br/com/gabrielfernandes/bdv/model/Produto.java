@@ -1,40 +1,30 @@
 package br.com.gabrielfernandes.bdv.model;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
-@Table(name = "produto")
 public class Produto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String codigo;
-    private String nome;
-    private BigDecimal preco;
-    private String descricao;
-    private String imagem; // URL da imagem
-
+    
     @ManyToOne
-    @JoinColumn(name = "categoria_id")
     private Categoria categoria;
-    private String subcategoria; // Usando String para subcategoria
+    
+    private String subcategoria;
+    private String descricao;
+    private String imagem;
+    private String nome;
+    private double preco;
+    private Long pedidoId;
+    private String codigo;
 
-    @Transient
-    private int quantidade;
-
-    @Transient
-    private BigDecimal subtotal;
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -44,28 +34,20 @@ public class Produto {
         this.id = id;
     }
 
-    public String getCodigo() {
-        return codigo;
+    public Categoria getCategoria() {
+        return categoria;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 
-    public String getNome() {
-        return nome;
+    public String getSubcategoria() {
+        return subcategoria;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public BigDecimal getPreco() {
-        return preco;
-    }
-
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
+    public void setSubcategoria(String subcategoria) {
+        this.subcategoria = subcategoria;
     }
 
     public String getDescricao() {
@@ -84,39 +66,35 @@ public class Produto {
         this.imagem = imagem;
     }
 
-    public String getSubcategoria() {
-        return subcategoria;
+    public String getNome() {
+        return nome;
     }
 
-    public void setSubcategoria(String subcategoria) {
-        this.subcategoria = subcategoria;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public int getQuantidade() {
-        return quantidade;
+    public double getPreco() {
+        return preco;
     }
 
-    public void setQuantidade(int quantidade) {
-        this.quantidade = quantidade;
+    public void setPreco(double preco) {
+        this.preco = preco;
     }
 
-    public BigDecimal getSubtotal() {
-        return subtotal;
+    public Long getPedidoId() {
+        return pedidoId;
     }
 
-    public void setSubtotal(BigDecimal subtotal) {
-        this.subtotal = subtotal;
+    public void setPedidoId(Long pedidoId) {
+        this.pedidoId = pedidoId;
     }
 
-    public Categoria getCategoria() {
-        return categoria;
+    public String getCodigo() {
+        return codigo;
     }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
-
-
-
-    
 }

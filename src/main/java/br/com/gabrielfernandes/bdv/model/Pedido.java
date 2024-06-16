@@ -72,13 +72,12 @@ public class Pedido {
         this.formaPagamento = FormaPagamento.DINHEIRO;
     }
 
-    public Pedido(Mesa mesa, List<ItemPedido> itens) {
+    public Pedido(Mesa mesa, LocalDateTime dataHora, Status status) {
         this.mesa = mesa;
-        this.itens = itens != null ? itens : new ArrayList<>();
-        this.status = Status.ABERTO;
-        this.total = BigDecimal.ZERO;
-        this.dataHora = LocalDateTime.now();
-        this.formaPagamento = FormaPagamento.DINHEIRO;
+        this.dataHora = dataHora;
+        this.status = status;
+        this.total = BigDecimal.ZERO; // Inicialize o total como zero
+        this.itens = new ArrayList<>(); // Inicializando a lista de itens
     }
 
     public Long getId() {

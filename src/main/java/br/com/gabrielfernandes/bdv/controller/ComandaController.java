@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -18,18 +18,30 @@ import br.com.gabrielfernandes.bdv.service.ProdutoService;
 @ViewScoped
 public class ComandaController implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Inject
     private ProdutoService produtoService;
 
     private List<Categoria> categorias;
-    private Map<Categoria, List<Produto>> produtosPorCategoria;
+    private Long categoriaSelecionadaId;
+    private List<Produto> produtosFiltrados;
+    private Map<String, List<Produto>> produtosPorCategoria;
 
     @PostConstruct
     public void init() {
         categorias = produtoService.findAllCategorias();
         produtosPorCategoria = new HashMap<>();
         for (Categoria categoria : categorias) {
-            produtosPorCategoria.put(categoria, produtoService.findProdutosByCategoria(categoria));
+            produtosPorCategoria.put(categoria.getNome(), produtoService.findProdutosByCategoria(categoria.getId()));
+        }
+    }
+
+    public void onCategoriaChange(Long categoriaId) {
+        if (categoriaId != null) {
+            produtosFiltrados = produtoService.findProdutosByCategoria(categoriaId);
+        } else {
+            produtosFiltrados = null;
         }
     }
 
@@ -37,12 +49,19 @@ public class ComandaController implements Serializable {
         return categorias;
     }
 
-    public Map<Categoria, List<Produto>> getProdutosPorCategoria() {
+    public Long getCategoriaSelecionadaId() {
+        return categoriaSelecionadaId;
+    }
+
+    public void setCategoriaSelecionadaId(Long categoriaSelecionadaId) {
+        this.categoriaSelecionadaId = categoriaSelecionadaId;
+    }
+
+    public List<Produto> getProdutosFiltrados() {
+        return produtosFiltrados;
+    }
+
+    public Map<String, List<Produto>> getProdutosPorCategoria() {
         return produtosPorCategoria;
     }
-
-    public void adicionarItem(Produto produto) {
-        // lógica para adicionar item ao pedido
-    }
 }
-

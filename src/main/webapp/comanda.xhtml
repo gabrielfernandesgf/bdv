@@ -3,31 +3,39 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
-<head>
+<h:head>
     <title>Comanda</title>
-</head>
-<body>
-    <h:form>
-        <h:panelGroup>
-            <h:outputText value="Mesa: #{mesaController.mesaSelecionada.numero}" />
+</h:head>
+<h:body>
+    <h:form id="comandaForm">
+        <p:growl id="msgs" showDetail="true" skipDetailIfEqualsSummary="true"/>
 
-            <h:panelGroup>
-                <ui:repeat value="#{categoriaController.categorias}" var="categoria">
-                    <h:panelGroup>
-                        <h:outputText value="#{categoria.nome}" />
-                        <ui:repeat value="#{categoria.produtos}" var="produto">
-                            <h:commandButton value="#{produto.nome}" action="#{categoriaController.adicionarProduto(produto)}" />
-                        </ui:repeat>
-                    </h:panelGroup>
-                </ui:repeat>
-            </h:panelGroup>
-        </h:panelGroup>
-
-        <!-- Botões para finalizar venda e voltar às mesas -->
-        <h:commandButton value="Finalizar Venda" action="#{mesaController.finalizarVenda}" />
-        <h:commandButton value="Voltar às Mesas" action="#{mesaController.voltarMesas}" />
+        <h:panelGrid columns="1" styleClass="card">
+            <h:outputText value="Comanda" styleClass="ui-panel-title"/>
+            
+            <h:outputText value="Categorias:"/>
+            <p:tabView>
+                <c:forEach items="#{comandaController.categorias}" var="categoria">
+                    <p:tab title="#{categoria.nome}">
+                        <p:dataList var="produto" value="#{comandaController.produtosPorCategoria[categoria.nome]}" type="ordered" itemType="disc">
+                            <f:facet name="header">
+                                #{categoria.nome}
+                            </f:facet>
+                            <p:column>
+                                <h:outputText value="#{produto.nome}" />
+                                <p:graphicImage name="resources/images/products/#{produto.imagem}" alt="#{produto.nome}" style="width:100px"/>
+                                <h:outputText value="#{produto.descricao}" />
+                                <h:outputText value="#{produto.preco}" />
+                                <p:commandButton value="Adicionar" actionListener="#{comandaController.addProdutoToPedido(produto.id)}" update=":comandaForm:msgs"/>
+                            </p:column>
+                        </p:dataList>
+                    </p:tab>
+                </c:forEach>
+            </p:tabView>
+        </h:panelGrid>
     </h:form>
-</body>
+</h:body>
 </html>

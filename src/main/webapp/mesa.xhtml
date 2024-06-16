@@ -52,7 +52,7 @@
                 <h:panelGroup styleClass="mesa-panel #{mesaController.getMesaStatusClass(mesa)}">
                     <h:outputText value="Mesa #{mesa.numero}" styleClass="mesa-label" />
                     <h:outputText value="Capacidade: #{mesa.numeroOcupantes}" />
-                    <p:commandButton value="Abrir Comanda" action="#{mesaController.abrirComanda(mesa)}" update=":form" process="@this" />
+                    <p:commandButton value="Abrir Comanda" action="#{mesaController.abrirComandaDialog(mesa)}" update=":form" oncomplete="PF('dlgAbrirComanda').show();" />
                 </h:panelGroup>
             </ui:repeat>
         </h:panelGroup>

@@ -6,43 +6,40 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.context.annotation.SessionScope;
 
-import br.com.gabrielfernandes.bdv.model.Categoria;
 import br.com.gabrielfernandes.bdv.model.ItemPedido;
 import br.com.gabrielfernandes.bdv.model.Mesa;
 import br.com.gabrielfernandes.bdv.model.Pedido;
 import br.com.gabrielfernandes.bdv.model.Produto;
-import br.com.gabrielfernandes.bdv.service.CategoriaService;
 import br.com.gabrielfernandes.bdv.service.MesaService;
 import br.com.gabrielfernandes.bdv.service.PedidoService;
 import br.com.gabrielfernandes.bdv.service.ProdutoService;
 
-@SessionScope
-@Controller
-public class MesaController implements Serializable {
+@Named
+@ViewScoped
+public class CardapioView implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private Mesa mesa = new Mesa();
     private Pedido pedido = new Pedido();
     private Long produtoSelecionadoId;
-    private Long categoriaSelecionadaId;
     private int quantidade = 1;
     private int numeroOcupantes;
     private LocalDateTime dataHoraAbertura;
-    private List<Produto> produtosFiltrados = new ArrayList<>();
-    private List<Categoria> categorias = new ArrayList<>();
-    
+
     @Autowired
     private MesaService mesaService;
 
@@ -52,19 +49,7 @@ public class MesaController implements Serializable {
     @Inject
     private ProdutoService produtoService;
 
-    @Inject
-    private CategoriaService categoriaService;
-
     private Mesa mesaSelecionada;
-
-
-    public void onCategoriaChange() {
-        if (categoriaSelecionadaId != null) {
-            produtosFiltrados = produtoService.findProdutosByCategoria(categoriaSelecionadaId);
-        } else {
-            produtosFiltrados = new ArrayList<>();
-        }
-    }
 
     public String sairDaComanda() {
         return "mesa.xhtml?faces-redirect=true";
@@ -95,6 +80,24 @@ public class MesaController implements Serializable {
         mesaService.save(mesa);
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Pagamento finalizado com sucesso!"));
         return "mesa.xhtml?faces-redirect=true";
+    }
+
+    public Map<String, Map<String, List<Produto>>> getProdutosPorCategoria() {
+        List<Produto> produtos = produtoService.findAll();
+        Map<String, Map<String, List<Produto>>> produtosPorCategoria = new HashMap<>();
+
+        for (Produto produto : produtos) {
+            String categoria = produto.getCategoria().getNome();
+            String nomeCategoria = (categoria != null) ? categoria : "Sem Categoria";
+            String subcategoria = (produto.getSubcategoria() != null) ? produto.getSubcategoria() : "Sem Subcategoria";
+
+            produtosPorCategoria
+                .computeIfAbsent(nomeCategoria, k -> new HashMap<>())
+                .computeIfAbsent(subcategoria, k -> new ArrayList<>())
+                .add(produto);
+        }
+
+        return produtosPorCategoria;
     }
 
     public void addProdutoToPedido(Long produtoId) {
@@ -256,32 +259,5 @@ public class MesaController implements Serializable {
 
     public void setDataHoraAbertura(LocalDateTime dataHoraAbertura) {
         this.dataHoraAbertura = dataHoraAbertura;
-    }
-
-    public Long getCategoriaSelecionadaId() {
-        return categoriaSelecionadaId;
-    }
-
-    public void setCategoriaSelecionadaId(Long categoriaSelecionadaId) {
-        this.categoriaSelecionadaId = categoriaSelecionadaId;
-    }
-
-    public List<Produto> getProdutosFiltrados() {
-        return produtosFiltrados;
-    }
-
-    public void setProdutosFiltrados(List<Produto> produtosFiltrados) {
-        this.produtosFiltrados = produtosFiltrados;
-    }
-
-    public List<Categoria> getCategorias() {
-        if (categorias.isEmpty()) {
-            categorias = categoriaService.findAll();
-        }
-        return categorias;
-    }
-
-    public void setCategorias(List<Categoria> categorias) {
-        this.categorias = categorias;
     }
 }
