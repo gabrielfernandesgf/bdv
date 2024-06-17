@@ -1,9 +1,12 @@
 package br.com.gabrielfernandes.bdv.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -14,15 +17,17 @@ public class Produto {
     private Long id;
     
     @ManyToOne
+    @JoinColumn(name = "categoria_id")
     private Categoria categoria;
     
     private String subcategoria;
     private String descricao;
     private String imagem;
     private String nome;
-    private double preco;
+    private BigDecimal preco;
     private Long pedidoId;
     private String codigo;
+    private boolean precisaPreparo;
 
     // Getters and Setters
 
@@ -66,6 +71,14 @@ public class Produto {
         this.imagem = imagem;
     }
 
+    public boolean isPrecisaPreparo() {
+        return precisaPreparo;
+    }
+
+    public void setPrecisaPreparo(boolean precisaPreparo) {
+        this.precisaPreparo = precisaPreparo;
+    }
+
     public String getNome() {
         return nome;
     }
@@ -74,11 +87,11 @@ public class Produto {
         this.nome = nome;
     }
 
-    public double getPreco() {
+    public BigDecimal getPreco() {
         return preco;
     }
 
-    public void setPreco(double preco) {
+    public void setPreco(BigDecimal preco) {
         this.preco = preco;
     }
 

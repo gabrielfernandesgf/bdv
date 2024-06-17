@@ -46,4 +46,8 @@ public class ProdutoService {
                  .setParameter("categoriaId", categoriaId)
                  .getResultList();
     }
+
+    public Produto findProdutoById(Long produtoId) {
+        return findById(produtoId);
+    }
 }

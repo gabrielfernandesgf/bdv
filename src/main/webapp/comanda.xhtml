@@ -3,11 +3,33 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 <h:head>
     <title>Comanda</title>
+    <style>
+        .product-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .product-item img {
+            margin-right: 10px;
+        }
+        .product-details {
+            flex-grow: 1;
+        }
+        .product-actions {
+            display: flex;
+            align-items: center;
+        }
+        .product-actions h\\:outputText {
+            margin-right: 10px;
+        }
+        .comanda-buttons {
+            margin-top: 20px;
+        }
+    </style>
 </h:head>
 <h:body>
     <h:form id="comandaForm">
@@ -24,17 +46,44 @@
                             <f:facet name="header">
                                 #{categoria.nome}
                             </f:facet>
-                            <p:column>
-                                <h:outputText value="#{produto.nome}" />
-                                <p:graphicImage name="resources/images/products/#{produto.imagem}" alt="#{produto.nome}" style="width:100px"/>
-                                <h:outputText value="#{produto.descricao}" />
-                                <h:outputText value="#{produto.preco}" />
-                                <p:commandButton value="Adicionar" actionListener="#{comandaController.addProdutoToPedido(produto.id)}" update=":comandaForm:msgs"/>
-                            </p:column>
+                            <div class="product-item">
+                                <p:graphicImage name="images/products/#{produto.imagem}" alt="#{produto.nome}" style="width:100px;height:100px"/>
+                                <div class="product-details">
+                                    <h:outputText value="#{produto.nome}" />
+                                </div>
+                                <div class="product-actions">
+                                    <h:outputText value="#{produto.preco}" />
+                                    <p:commandButton value="Adicionar" actionListener="#{comandaController.addProdutoToPedido(produto.id)}" update=":comandaForm:msgs :comandaForm:selectedProductsPanel"/>
+                                </div>
+                            </div>
                         </p:dataList>
                     </p:tab>
                 </c:forEach>
             </p:tabView>
+        </h:panelGrid>
+
+        <h:panelGrid columns="1" styleClass="card comanda-buttons">
+            <p:commandButton value="Salvar Comanda" action="#{comandaController.salvarComanda}" update=":comandaForm:msgs" />
+            <p:commandButton value="Voltar às Mesas" action="mesa.xhtml" />
+            <p:commandButton value="Finalizar Venda" action="#{comandaController.finalizarVenda}" update=":comandaForm:msgs :comandaForm:selectedProductsPanel" />
+            <p:commandButton value="Cancelar Mesa" action="#{comandaController.cancelarMesa}" update=":comandaForm:msgs :comandaForm:selectedProductsPanel" />
+            <p:commandButton value="Imprimir Preparo" action="#{comandaController.imprimirPreparo}" update=":comandaForm:msgs" />
+        </h:panelGrid>
+
+        <h:panelGrid columns="1" styleClass="card" id="selectedProductsPanel">
+            <h:outputText value="Produtos Selecionados" styleClass="ui-panel-title"/>
+            <p:dataList var="produtoSelecionado" value="#{comandaController.pedido.itens}" type="ordered" itemType="disc">
+                <div class="product-item">
+                    <p:graphicImage name="images/products/#{produtoSelecionado.produto.imagem}" alt="#{produtoSelecionado.produto.nome}" style="width:100px;height:100px"/>
+                    <div class="product-details">
+                        <h:outputText value="#{produtoSelecionado.produto.nome}" />
+                    </div>
+                    <div class="product-actions">
+                        <h:outputText value="#{produtoSelecionado.subtotal}" />
+                        <p:commandButton value="Remover" actionListener="#{comandaController.removeProdutoFromPedido(produtoSelecionado.produto.id)}" update=":comandaForm:msgs :comandaForm:selectedProductsPanel"/>
+                    </div>
+                </div>
+            </p:dataList>
         </h:panelGrid>
     </h:form>
 </h:body>

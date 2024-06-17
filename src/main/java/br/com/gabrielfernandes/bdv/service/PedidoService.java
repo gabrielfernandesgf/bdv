@@ -8,13 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.gabrielfernandes.bdv.model.Mesa;
 import br.com.gabrielfernandes.bdv.model.Pedido;
+import br.com.gabrielfernandes.bdv.model.Produto;
 import br.com.gabrielfernandes.bdv.repository.PedidoRepository;
+import br.com.gabrielfernandes.bdv.repository.ProdutoRepository;
 
 @Service
 public class PedidoService {
 
     @Autowired
     private PedidoRepository pedidoRepository;
+
+    @Autowired
+    private ProdutoRepository produtoRepository; 
 
     @Transactional
     public void save(Pedido pedido) {
@@ -31,5 +36,9 @@ public class PedidoService {
 
     public List<Pedido> findByMesaAndStatus(Mesa mesa, Pedido.Status status) {
         return pedidoRepository.findByMesaAndStatus(mesa, status);
+    }
+
+    public Produto findProdutoById(Long id) {
+        return produtoRepository.findById(id).orElse(null);
     }
 }

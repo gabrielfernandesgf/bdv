@@ -19,19 +19,26 @@ public class Mesa {
     private Long id;
     
     private int numero;
-    private int numeroOcupantes = 4; // Valor padrão definido como 4
+    private int numeroOcupantes;
     private LocalDateTime horaAbertura;
     private LocalDateTime horaFechamento;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    
     public enum Status {
         LIVRE,
         OCUPADO,
         AGUARDANDO_PAGAMENTO
     }
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    public Mesa() {
+        this.numeroOcupantes = 4;
+        this.status = Status.LIVRE;
+        this.horaAbertura = LocalDateTime.now();
 
+    }
+    
     // Getters and Setters
 
     public Long getId() {

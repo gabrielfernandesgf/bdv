@@ -108,7 +108,7 @@ public class CardapioView implements Serializable {
             itemPedido.setQuantidade(quantidade);
 
             // Converter o preço para BigDecimal
-            BigDecimal preco = BigDecimal.valueOf(produtoSelecionado.getPreco());
+            BigDecimal preco = produtoSelecionado.getPreco();
             BigDecimal subtotal = preco.multiply(BigDecimal.valueOf(quantidade));
 
             itemPedido.setSubtotal(subtotal);

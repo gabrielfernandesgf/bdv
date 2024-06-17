@@ -33,7 +33,6 @@ public class ItemPedido {
     private int quantidade;
     private BigDecimal subtotal;
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -85,5 +84,10 @@ public class ItemPedido {
     // Método para acessar o nome do produto
     public String getNome() {
         return produto != null ? produto.getNome() : "";
+    }
+
+    // Método para acessar o preço do produto
+    public BigDecimal getPreco() {
+        return produto != null ? produto.getPreco() : BigDecimal.ZERO;
     }
 }

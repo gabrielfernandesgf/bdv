@@ -97,17 +97,24 @@ public class MesaController implements Serializable {
         return "mesa.xhtml?faces-redirect=true";
     }
 
+    public void cancelarMesa(){
+        pedido.setStatus(Pedido.Status.CANCELADO);
+        pedidoService.save(pedido);
+        mesa.setStatus(Mesa.Status.LIVRE);
+        mesaService.save(mesa);
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Mesa cancelada com sucesso!"));
+    }
+
     public void addProdutoToPedido(Long produtoId) {
         Produto produtoSelecionado = produtoService.findById(produtoId);
         if (produtoSelecionado != null) {
             ItemPedido itemPedido = new ItemPedido();
             itemPedido.setProduto(produtoSelecionado);
             itemPedido.setQuantidade(quantidade);
-
-            // Converter o preço para BigDecimal
-            BigDecimal preco = BigDecimal.valueOf(produtoSelecionado.getPreco());
+    
+            BigDecimal preco = produtoSelecionado.getPreco();
             BigDecimal subtotal = preco.multiply(BigDecimal.valueOf(quantidade));
-
+    
             itemPedido.setSubtotal(subtotal);
             pedido.getItens().add(itemPedido);  // Adiciona à lista de itens
             pedido.calcularTotal();
@@ -117,6 +124,7 @@ public class MesaController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Produto não encontrado!"));
         }
     }
+    
 
     public void selecionarProduto(Long produtoId) {
         this.produtoSelecionadoId = produtoId;
